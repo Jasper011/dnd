@@ -30,14 +30,30 @@ function addItem() {
     }
 }
 
-function initItems(params) {
+function initItems() {
     for (let item of items) {
         if (!item.id) {
             item.id = maxId;
             maxId++;
         }
-        item.addEventListener('dragstart', (event) => {
-            event.dataTransfer.setData('id', event.target.id);
+        item.addEventListener('mousedown', (event)=>{
+            let shiftX = event.clientX - item.getBoundingClientRect().left;
+            let shiftY = event.clientY - item.getBoundingClientRect().top;
+            item.style.position = 'absolute'
+            document.body.append(item);
+            function moveItem(x, y) {
+                item.style.top = y - shiftY + 'px'
+                item.style.left = x - shiftX + 'px'
+            }
+            function onMove(event){
+                moveItem(event.pageX, event.pageY)
+            }
+            document.addEventListener('mousemove', onMove)
+            item.addEventListener('mouseup', function onUp(event){
+                document.removeEventListener('mousemove', onMove)
+                item.removeEventListener('mouseup', onUp)
+                console.log(event.target);
+            })
         })
     }
 }
@@ -48,13 +64,7 @@ function deleteItem(id) {
 
 function initCages() {
     for (let cage of cages) {
-        cage.addEventListener('dragover', (event) => {
-            event.preventDefault();
-        })
-        cage.addEventListener('drop', (event) => {
-            let id = event.dataTransfer.getData('id');
-            event.target.append(document.getElementById(id));
-        })
+        
     }
 }
 
